@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taqwa Educational Hub - Modern Learning Platform</title>
+    <meta name="description" content="Taqwa Educational Hub provides top-tier educational resources, course management, and monitoring tools for students and parents.">
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Loading Screen -->
+    <div id="loader" class="loader-wrapper">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <p>Loading Taqwa Hub...</p>
+        </div>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <a href="#">Taqwa Educational Hub</a>
+            </div>
+            
+            <div class="nav-right">
+                <div class="search-box">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" placeholder="Search courses or topics...">
+                </div>
+                <a href="#" class="nav-link">Log in</a>
+                <a href="#" class="btn btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Floating Status Cards Overlay -->
+    <div class="floating-cards-container">
+        <div class="floating-card glassmorphism">
+            <div class="icon-box pastel-green-bg"><i class="fa-solid fa-check-circle"></i></div>
+            <div class="card-details">
+                <span class="card-label">Subject Conditions</span>
+                <span class="card-value">Optimal</span>
+            </div>
+        </div>
+        <div class="floating-card glassmorphism">
+            <div class="icon-box pastel-green-bg"><i class="fa-solid fa-stopwatch"></i></div>
+            <div class="card-details">
+                <span class="card-label">Duration</span>
+                <span class="card-value">Semester</span>
+            </div>
+        </div>
+        <div class="floating-card glassmorphism">
+            <div class="icon-box pastel-green-bg"><i class="fa-solid fa-calendar-alt"></i></div>
+            <div class="card-details">
+                <span class="card-label">Upcoming Classes</span>
+                <span class="card-value">3 Today</span>
+            </div>
+        </div>
+        <div class="floating-card glassmorphism">
+            <div class="icon-box pastel-green-bg"><i class="fa-solid fa-user-circle"></i></div>
+            <div class="card-details">
+                <span class="card-label">Instructor Profile</span>
+                <span class="card-value">Verified</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-container">
+
+            <!-- Ad Banner Carousel -->
+            <div class="ad-carousel-container">
+                <div class="ad-slides">
+                    <div class="ad-slide active">
+                        <div class="ad-content">
+                            <span class="ad-badge">New Release</span>
+                            <h2>Master 10th ICSE Syllabus</h2>
+                            <p>Comprehensive video lectures and mock tests for board preparation.</p>
+                            <button class="btn btn-primary">Enroll Now</button>
+                        </div>
+                        <img src="course_thumbnail.png" alt="Ad Image">
+                    </div>
+                    <div class="ad-slide">
+                        <div class="ad-content">
+                            <span class="ad-badge">Trending</span>
+                            <h2>Crack 12th Boards with Ease</h2>
+                            <p>Intensive preparation material for Physics, Chemistry, and Mathematics.</p>
+                            <button class="btn btn-primary">Enroll Now</button>
+                        </div>
+                        <img src="course_thumbnail.png" alt="Ad Image">
+                    </div>
+                    <div class="ad-slide">
+                        <div class="ad-content">
+                            <span class="ad-badge">Announcement</span>
+                            <h2>Early Bird: 9th & 7th ICSE</h2>
+                            <p>Start your foundation strong. Up to 30% off on early enrollment.</p>
+                            <button class="btn btn-primary">Discover More</button>
+                        </div>
+                        <img src="course_thumbnail.png" alt="Ad Image">
+                    </div>
+                </div>
+                <button class="slider-btn prev-btn" aria-label="Previous Slide"><i class="fa-solid fa-chevron-left"></i></button>
+                <button class="slider-btn next-btn" aria-label="Next Slide"><i class="fa-solid fa-chevron-right"></i></button>
+                <div class="slider-dots">
+                    <span class="dot active" data-index="0"></span>
+                    <span class="dot" data-index="1"></span>
+                    <span class="dot" data-index="2"></span>
+                </div>
+            </div>
+
+            <h1 class="hero-title">Recently Released Courses</h1>
+            
+            <!-- Horizontal scrollable grid -->
+            <div class="course-scroll-wrapper">
+                <div class="course-grid">
+                    
+                    <!-- Course Card 1 -->
+                    <div class="course-card">
+                        <div class="card-img-wrapper">
+                            <img src="course_thumbnail.png" alt="Students studying in library" class="course-img">
+                            <span class="badge">New Release</span>
+                        </div>
+                        <div class="course-content">
+                            <h3 class="course-title">10th ICSE Programs</h3>
+                            <p class="course-desc">Master the fundamentals of the ICSE curriculum with daily assessments.</p>
+                            <div class="course-actions">
+                                <button class="btn btn-outline btn-learn-more" onclick="openInfoModal()">Learn More</button>
+                                <button class="btn btn-primary btn-enroll" onclick="openEnrollModal()">Enroll Now</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 2 -->
+                    <div class="course-card">
+                        <div class="card-img-wrapper">
+                            <img src="course_thumbnail.png" alt="Students studying in library" class="course-img">
+                            <span class="badge">Featured</span>
+                        </div>
+                        <div class="course-content">
+                            <h3 class="course-title">9th ICSE Programs</h3>
+                            <p class="course-desc">An interactive deep dive to build a strong foundation for your boards.</p>
+                            <div class="course-actions">
+                                <button class="btn btn-outline btn-learn-more" onclick="openInfoModal()">Learn More</button>
+                                <button class="btn btn-primary btn-enroll" onclick="openEnrollModal()">Enroll Now</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 3 -->
+                    <div class="course-card">
+                        <div class="card-img-wrapper">
+                            <img src="course_thumbnail.png" alt="Students studying in library" class="course-img">
+                        </div>
+                        <div class="course-content">
+                            <h3 class="course-title">7th ICSE Programs</h3>
+                            <p class="course-desc">Engaging and interactive courses tailored for junior high success.</p>
+                            <div class="course-actions">
+                                <button class="btn btn-outline btn-learn-more" onclick="openInfoModal()">Learn More</button>
+                                <button class="btn btn-primary btn-enroll" onclick="openEnrollModal()">Enroll Now</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 4 -->
+                    <div class="course-card">
+                        <div class="card-img-wrapper">
+                            <img src="course_thumbnail.png" alt="Students studying in library" class="course-img">
+                            <span class="badge">New Release</span>
+                        </div>
+                        <div class="course-content">
+                            <h3 class="course-title">12th Boards Preparation</h3>
+                            <p class="course-desc">In-depth materials spanning core science and commerce tracks.</p>
+                            <div class="course-actions">
+                                <button class="btn btn-outline btn-learn-more" onclick="openInfoModal()">Learn More</button>
+                                <button class="btn btn-primary btn-enroll" onclick="openEnrollModal()">Enroll Now</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content: Parent Quick View Dashboard -->
+    <section class="dashboard-section">
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <h2 class="dashboard-title">Parent Quick View</h2>
+                <p class="dashboard-subtitle">Search or select a student to see their peer summary and progress reports.</p>
+                
+                <div class="dashboard-search">
+                    <input type="text" placeholder="Enter student name or ID..." class="dashboard-input">
+                    <button class="btn btn-primary btn-search">Search</button>
+                </div>
+            </div>
+
+            <!-- Subject Cards Grid -->
+            <div class="subject-grid">
+                
+                <!-- Subject Card 1 -->
+                <div class="subject-card">
+                    <div class="subject-header">
+                        <h3 class="subject-title">English Literature</h3>
+                        <span class="status-indicator"></span>
+                    </div>
+                    
+                    <ul class="data-list">
+                        <li>
+                            <i class="fa-solid fa-clock icon-green"></i>
+                            <div>
+                                <span class="data-label">Class Duration</span>
+                                <span class="data-value">45 Mins / session</span>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-calendar-check icon-green"></i>
+                            <div>
+                                <span class="data-label">Upcoming Classes</span>
+                                <span class="data-value">Tue, Thu (10:00 AM)</span>
+                            </div>
+                        </li>
+                    </ul>
+
+
+                </div>
+
+                <!-- Subject Card 2 -->
+                <div class="subject-card">
+                    <div class="subject-header">
+                        <h3 class="subject-title">Chemistry Advanced</h3>
+                        <span class="status-indicator"></span>
+                    </div>
+                    
+                    <ul class="data-list">
+                        <li>
+                            <i class="fa-solid fa-clock icon-green"></i>
+                            <div>
+                                <span class="data-label">Class Duration</span>
+                                <span class="data-value">60 Mins / session</span>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-calendar-check icon-green"></i>
+                            <div>
+                                <span class="data-label">Upcoming Classes</span>
+                                <span class="data-value">Mon, Wed (01:00 PM)</span>
+                            </div>
+                        </li>
+                    </ul>
+
+
+                </div>
+
+                <!-- Subject Card 3 -->
+                <div class="subject-card">
+                    <div class="subject-header">
+                        <h3 class="subject-title">Calculus & Algebra</h3>
+                        <span class="status-indicator"></span>
+                    </div>
+                    
+                    <ul class="data-list">
+                        <li>
+                            <i class="fa-solid fa-clock icon-green"></i>
+                            <div>
+                                <span class="data-label">Class Duration</span>
+                                <span class="data-value">90 Mins / session</span>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-calendar-check icon-green"></i>
+                            <div>
+                                <span class="data-label">Upcoming Classes</span>
+                                <span class="data-value">Fri, Sat (09:00 AM)</span>
+                            </div>
+                        </li>
+                    </ul>
+
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="footer-section">
+        <div class="footer-container">
+            <div class="footer-content">
+                <h2 class="footer-title">What do you want?</h2>
+                <p class="footer-desc">
+                    Need help finding the right resources or need to navigate a specific module? Our interactive platform makes it easier than ever to track progress, monitor sessions, and dive into your educational goals.
+                </p>
+                <button class="btn btn-primary btn-large">Search Now</button>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="social-icons">
+                    <a href="#" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+                <p class="copyright">&copy; 2026 Taqwa Educational Hub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Info Modal -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModals()">&times;</span>
+            <h2 class="modal-title">Batch Information</h2>
+            <p class="modal-desc">Discover the detailed syllabus, interactive session timings, assessment schedules, and the complete roadmap designed to build absolute confidence in the subject matter. Start mastering the concepts today with our guided interactive modules.</p>
+            <ul class="modal-list">
+                <li><i class="fa-solid fa-check"></i> Daily interactive live sessions</li>
+                <li><i class="fa-solid fa-check"></i> Weekly assessment & mock tests</li>
+                <li><i class="fa-solid fa-check"></i> One-on-one doubt clearing</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Enroll Modal -->
+    <div id="enrollModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModals()">&times;</span>
+            <h2 class="modal-title">Enroll Now</h2>
+            <p class="modal-desc">Please fill out your details to secure your batch.</p>
+            <form class="enroll-form" onsubmit="event.preventDefault(); alert('Enrollment submitted successfully!'); closeModals();">
+                <div class="form-group">
+                    <label>Student Name</label>
+                    <input type="text" required placeholder="Enter student name">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" required placeholder="Enter valid phone number">
+                </div>
+                <div class="form-group">
+                    <label>Class / Additional Details</label>
+                    <textarea rows="3" placeholder="Enter standard and other requests"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Submit Application</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Loading Screen Logic
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.body.classList.add('loaded');
+            }, 800); // 800ms smooth transition
+        });
+
+        // Ad Carousel Logic
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.ad-slide');
+        const dots = document.querySelectorAll('.dot');
+        const nextBtn = document.querySelector('.next-btn');
+        const prevBtn = document.querySelector('.prev-btn');
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            
+            if(index >= slides.length) currentSlide = 0;
+            if(index < 0) currentSlide = slides.length - 1;
+            
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+        }
+
+        if(nextBtn && prevBtn) {
+            nextBtn.addEventListener('click', () => { currentSlide++; showSlide(currentSlide); });
+            prevBtn.addEventListener('click', () => { currentSlide--; showSlide(currentSlide); });
+        }
+
+        dots.forEach(dot => {
+            dot.addEventListener('click', (e) => {
+                currentSlide = parseInt(e.target.dataset.index);
+                showSlide(currentSlide);
+            });
+        });
+
+        // Auto slide every 5 seconds
+        setInterval(() => {
+            currentSlide++;
+            showSlide(currentSlide);
+        }, 5000);
+        // Modal Logic
+        const infoModal = document.getElementById('infoModal');
+        const enrollModal = document.getElementById('enrollModal');
+
+        function openInfoModal() {
+            infoModal.classList.add('show');
+        }
+
+        function openEnrollModal() {
+            enrollModal.classList.add('show');
+        }
+
+        function closeModals() {
+            infoModal.classList.remove('show');
+            enrollModal.classList.remove('show');
+        }
+
+        // Close on outside click
+        window.onclick = function(event) {
+            if (event.target == infoModal || event.target == enrollModal) {
+                closeModals();
+            }
+        }
+    </script>
+</body>
+</html>
