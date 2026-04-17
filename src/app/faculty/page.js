@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -26,8 +27,8 @@ function haversineDistance(lat1, lng1, lat2, lng2) {
 
 export default function FacultyPage() {
   // Memoize the supabase client so it doesn't get recreated on every render
-  // (this was causing useCallback dependencies to churn and silent failures)
   const supabase = useMemo(() => createClient(), []);
+  const router = useRouter();
 
   // ── Auth / Role State ──────────────────────────────────────────────────────
   const [user, setUser]           = useState(null);
@@ -76,7 +77,9 @@ export default function FacultyPage() {
     resolveAuth();
   }, []);
 
-  // ─── Geolocation check (runs once on mount) ───────────────────────────────
+  // ─── Continuous geolocation monitoring ─────────────────────────────────────
+  // Uses watchPosition to track the teacher's location in real-time.
+  // If they leave the 50m geofence while checked in, auto-checkout + sign-out.
   useEffect(() => {
     if (!navigator.geolocation) {
       setGeoError("Geolocation is not supported by your browser.");
@@ -84,7 +87,7 @@ export default function FacultyPage() {
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(
+    const watchId = navigator.geolocation.watchPosition(
       (pos) => {
         const dist = haversineDistance(
           pos.coords.latitude,
@@ -100,9 +103,37 @@ export default function FacultyPage() {
         setGeoError("Location access denied. Cannot verify proximity.");
         setGeoLoading(false);
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 5000 }
     );
+
+    return () => navigator.geolocation.clearWatch(watchId);
   }, []);
+
+  // ─── Auto-checkout + sign-out when teacher leaves geofence ────────────────
+  useEffect(() => {
+    if (!inRange && !geoLoading && !geoError && isCheckedIn && todayRecord && user) {
+      (async () => {
+        setActionLoading(true);
+        try {
+          // Auto check-out
+          await supabase
+            .from("teacher_attendance")
+            .update({ check_out: new Date().toISOString() })
+            .eq("id", todayRecord.id);
+
+          // Sign out of Supabase
+          await supabase.auth.signOut();
+
+          alert("You have left the Taqwa Edu Hub premises. You have been automatically checked out and signed out.");
+          router.push("/login");
+        } catch (err) {
+          console.error("Auto-checkout failed:", err);
+          setActionMsg({ type: "error", text: "Auto-checkout failed. Please check out manually before leaving." });
+        }
+        setActionLoading(false);
+      })();
+    }
+  }, [inRange, geoLoading, geoError, isCheckedIn, todayRecord, user, supabase, router]);
 
   // ─── Fetch today's attendance record ─────────────────────────────────────
   const fetchAttendance = useCallback(async (uid) => {

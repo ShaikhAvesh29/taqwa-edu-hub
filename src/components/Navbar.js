@@ -1,11 +1,28 @@
 "use client";
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { createClient } from '@/utils/supabase/client';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [theme, setTheme] = useState('light');
+  const [session, setSession] = useState(null);
+  const supabase = createClient();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase.auth]);
 
   useEffect(() => {
     if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -62,15 +79,30 @@ export default function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center gap-4">
-            <Link href="/my-batches" className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors min-h-[48px] flex items-center justify-center px-2">
-              My Batches
-            </Link>
-            <Link href="/login" className="text-sm font-semibold text-gray-900 dark:text-gray-100 hover:text-primary transition-colors min-h-[48px] flex items-center justify-center px-2">
-              Log in
-            </Link>
-            <Link href="/login" className="text-sm font-semibold bg-primary text-white min-h-[40px] px-5 py-2 rounded-xl hover:bg-emerald-600 transition-colors flex items-center justify-center shadow-md">
-              Sign Up
-            </Link>
+            {session ? (
+              <>
+                <Link href="/dashboard" className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors min-h-[48px] flex items-center justify-center px-2">
+                  Dashboard
+                </Link>
+                <Link href="/profile" className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors min-h-[48px] flex items-center justify-center px-2">
+                  Edit Profile
+                </Link>
+                <div className="flex items-center justify-center min-h-[40px] px-3 py-2">
+                  <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold shadow-md cursor-pointer hover:bg-emerald-600 transition-colors" title={session.user?.email}>
+                    {session.user?.email?.[0].toUpperCase() || 'U'}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="text-sm font-semibold text-gray-900 dark:text-gray-100 hover:text-primary transition-colors min-h-[48px] flex items-center justify-center px-2">
+                  Log in
+                </Link>
+                <Link href="/register" className="text-sm font-semibold bg-primary text-white min-h-[40px] px-5 py-2 rounded-xl hover:bg-emerald-600 transition-colors flex items-center justify-center shadow-md">
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile menu buttons */}
@@ -104,22 +136,22 @@ export default function Navbar() {
               <div>
                 <p className="text-xs uppercase tracking-widest font-bold text-gray-500 dark:text-gray-400 mb-4">Discover</p>
                 <div className="grid grid-cols-2 gap-4">
-                  <a href="#" onClick={(e) => { e.preventDefault(); setIsDrawerOpen(false); alert('Feature Coming Soon!'); }} className="bg-gradient-to-br from-emerald-500 to-teal-600 p-4 rounded-xl text-white shadow-md hover:-translate-y-1 transition-transform cursor-pointer block">
+                  <Link href="/coming-soon" onClick={() => setIsDrawerOpen(false)} className="bg-gradient-to-br from-emerald-500 to-teal-600 p-4 rounded-xl text-white shadow-md hover:-translate-y-1 transition-transform cursor-pointer block">
                     <i className="fa-solid fa-chart-line text-2xl mb-2 block"></i>
                     <h3 className="font-semibold text-sm">Leaderboard</h3>
-                  </a>
-                  <a href="#" onClick={(e) => { e.preventDefault(); setIsDrawerOpen(false); alert('Feature Coming Soon!'); }} className="bg-gradient-to-br from-indigo-500 to-blue-600 p-4 rounded-xl text-white shadow-md hover:-translate-y-1 transition-transform cursor-pointer block">
+                  </Link>
+                  <Link href="/coming-soon" onClick={() => setIsDrawerOpen(false)} className="bg-gradient-to-br from-indigo-500 to-blue-600 p-4 rounded-xl text-white shadow-md hover:-translate-y-1 transition-transform cursor-pointer block">
                     <i className="fa-solid fa-chalkboard-user text-2xl mb-2 block"></i>
                     <h3 className="font-semibold text-sm">Live Classes</h3>
-                  </a>
-                  <a href="#" onClick={(e) => { e.preventDefault(); setIsDrawerOpen(false); alert('Feature Coming Soon!'); }} className="bg-gradient-to-br from-purple-500 to-pink-600 p-4 rounded-xl text-white shadow-md hover:-translate-y-1 transition-transform cursor-pointer block">
+                  </Link>
+                  <Link href="/coming-soon" onClick={() => setIsDrawerOpen(false)} className="bg-gradient-to-br from-purple-500 to-pink-600 p-4 rounded-xl text-white shadow-md hover:-translate-y-1 transition-transform cursor-pointer block">
                     <i className="fa-solid fa-file-contract text-2xl mb-2 block"></i>
                     <h3 className="font-semibold text-sm">Mock Tests</h3>
-                  </a>
-                  <a href="#" onClick={(e) => { e.preventDefault(); setIsDrawerOpen(false); alert('Feature Coming Soon!'); }} className="bg-gradient-to-br from-rose-500 to-orange-500 p-4 rounded-xl text-white shadow-md hover:-translate-y-1 transition-transform cursor-pointer block">
+                  </Link>
+                  <Link href="/coming-soon" onClick={() => setIsDrawerOpen(false)} className="bg-gradient-to-br from-rose-500 to-orange-500 p-4 rounded-xl text-white shadow-md hover:-translate-y-1 transition-transform cursor-pointer block">
                     <i className="fa-solid fa-medal text-2xl mb-2 block"></i>
                     <h3 className="font-semibold text-sm">Certificates</h3>
-                  </a>
+                  </Link>
                 </div>
               </div>
 
@@ -131,7 +163,7 @@ export default function Navbar() {
                   <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
                     <i className="fa-solid fa-chalkboard-teacher"></i>
                   </div>
-                  Faculty Info
+                  Attendance Portal
                 </Link>
                 <Link href="/my-batches" onClick={() => setIsDrawerOpen(false)} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-700 dark:text-gray-200 font-medium transition-colors">
                   <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
@@ -143,18 +175,18 @@ export default function Navbar() {
                 <div className="my-2 border-t border-gray-100 dark:border-gray-800"></div>
                 <p className="text-xs uppercase tracking-widest font-bold text-gray-500 dark:text-gray-400 mb-2 mt-2">Account</p>
 
-                <Link href="/login" onClick={() => setIsDrawerOpen(false)} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-700 dark:text-gray-200 font-medium transition-colors">
+                <Link href="/profile" onClick={() => setIsDrawerOpen(false)} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-700 dark:text-gray-200 font-medium transition-colors">
                   <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                     <i className="fa-solid fa-user"></i>
                   </div>
                   Profile Settings
                 </Link>
-                <a href="#" onClick={(e) => { e.preventDefault(); setIsDrawerOpen(false); alert('Feature Coming Soon!'); }} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-700 dark:text-gray-200 font-medium transition-colors w-full text-left">
+                <Link href="/coming-soon" onClick={() => setIsDrawerOpen(false)} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-700 dark:text-gray-200 font-medium transition-colors w-full text-left">
                   <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 flex items-center justify-center">
                     <i className="fa-solid fa-headset"></i>
                   </div>
                   Help & Support
-                </a>
+                </Link>
                 
                 {/* Dark Mode Toggle inside Drawer */}
                 <button onClick={toggleTheme} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-700 dark:text-gray-200 font-medium transition-colors w-full text-left mt-2">
@@ -167,9 +199,15 @@ export default function Navbar() {
             </div>
             
             <div className="mt-auto p-6 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50">
-               <Link href="/login" className="w-full py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center shadow-md">
-                 Sign In / Register
-               </Link>
+               {session ? (
+                 <button onClick={async () => { await supabase.auth.signOut(); setIsDrawerOpen(false); }} className="w-full py-3 bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center shadow-sm">
+                   Sign Out
+                 </button>
+               ) : (
+                 <Link href="/login" onClick={() => setIsDrawerOpen(false)} className="w-full py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center shadow-md">
+                   Sign In / Register
+                 </Link>
+               )}
             </div>
           </div>
         </div>

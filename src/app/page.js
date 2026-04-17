@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -194,9 +195,9 @@ export default function Home() {
                <h2 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight flex items-center gap-3">
                  Recently Released Courses
                </h2>
-               <a href="#" className="hidden sm:flex items-center justify-center bg-white dark:bg-gray-900 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 dark:border-gray-800 text-gray-900 dark:text-gray-100 font-bold px-6 py-2.5 rounded-full hover:-translate-y-0.5 transition-transform">
+               <Link href="/coming-soon" className="hidden sm:flex items-center justify-center bg-white dark:bg-gray-900 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 dark:border-gray-800 text-gray-900 dark:text-gray-100 font-bold px-6 py-2.5 rounded-full hover:-translate-y-0.5 transition-transform">
                  View All <i className="fa-solid fa-arrow-right ml-2 text-sm"></i>
-               </a>
+               </Link>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
