@@ -1,10 +1,55 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
+import { createClient } from "@/utils/supabase/client";
 
 export default function CourseDashboard() {
+  const params = useParams();
+  const courseId = params.id;
+  const supabase = createClient();
+
   const isEnrolled = false;
   const [activeTab, setActiveTab] = useState("Lectures");
+  const [courseData, setCourseData] = useState(null);
+  const [courseLoading, setCourseLoading] = useState(true);
+
+  // ─── Fetch course/batch info from Supabase ────────────────────────────────
+  useEffect(() => {
+    async function fetchCourse() {
+      try {
+        const { data, error } = await supabase
+          .from("courses")
+          .select("*")
+          .eq("id", courseId)
+          .single();
+
+        if (!error && data) {
+          setCourseData(data);
+        } else {
+          // Fallback: derive a readable name from the URL slug
+          const fallbackName = courseId
+            .replace(/-/g, " ")
+            .replace(/\b\w/g, (c) => c.toUpperCase());
+          setCourseData({
+            name: fallbackName,
+            description: `Explore our comprehensive ${fallbackName} curriculum with daily assessments and expert guidance.`,
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load course data:", err);
+        const fallbackName = courseId
+          .replace(/-/g, " ")
+          .replace(/\b\w/g, (c) => c.toUpperCase());
+        setCourseData({
+          name: fallbackName,
+          description: `Explore our comprehensive ${fallbackName} curriculum with daily assessments and expert guidance.`,
+        });
+      }
+      setCourseLoading(false);
+    }
+    if (courseId) fetchCourse();
+  }, [courseId]);
 
   const sidebarItems = [
     { name: "Lectures", icon: "fa-video" },
@@ -27,6 +72,10 @@ export default function CourseDashboard() {
       avatar: "https://ui-avatars.com/api/?name=Obair&background=15803d&color=fff"
     }
   ];
+
+  // Dynamic course name and description (from DB or fallback)
+  const courseName = courseData?.name || courseData?.title || "Loading...";
+  const courseDescription = courseData?.description || "Master the fundamentals of the curriculum with daily assessments and expert guidance.";
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col md:flex-row transition-colors">
@@ -83,12 +132,21 @@ export default function CourseDashboard() {
           <div className="inline-block px-4 py-1.5 mb-4 rounded-full bg-green-50 dark:bg-gray-900 text-green-700 dark:text-green-500 text-xs font-bold uppercase tracking-widest border border-green-100 dark:border-green-900">
             Batch Details
           </div>
-          <h1 className="text-3xl md:text-5xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight mb-4">
-            10th ICSE Programs
-          </h1>
-          <p className="text-gray-600 text-lg md:text-xl max-w-3xl leading-relaxed">
-            Master the fundamentals of the ICSE curriculum with daily assessments and expert guidance.
-          </p>
+          {courseLoading ? (
+            <div className="animate-pulse">
+              <div className="h-10 bg-gray-200 dark:bg-gray-800 rounded-lg w-2/3 mb-4"></div>
+              <div className="h-5 bg-gray-200 dark:bg-gray-800 rounded-lg w-full max-w-xl"></div>
+            </div>
+          ) : (
+            <>
+              <h1 className="text-3xl md:text-5xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight mb-4">
+                {courseName}
+              </h1>
+              <p className="text-gray-600 text-lg md:text-xl max-w-3xl leading-relaxed">
+                {courseDescription}
+              </p>
+            </>
+          )}
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">

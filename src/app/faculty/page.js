@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { createClient } from "@/utils/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -25,7 +25,9 @@ function haversineDistance(lat1, lng1, lat2, lng2) {
 }
 
 export default function FacultyPage() {
-  const supabase = createClient();
+  // Memoize the supabase client so it doesn't get recreated on every render
+  // (this was causing useCallback dependencies to churn and silent failures)
+  const supabase = useMemo(() => createClient(), []);
 
   // ── Auth / Role State ──────────────────────────────────────────────────────
   const [user, setUser]           = useState(null);
@@ -140,39 +142,84 @@ export default function FacultyPage() {
 
   // ─── Check-In handler ─────────────────────────────────────────────────────
   async function handleCheckIn() {
-    if (!inRange) return;
+    // Provide user feedback instead of silently returning
+    if (geoLoading) {
+      setActionMsg({ type: "error", text: "Still acquiring your location. Please wait..." });
+      return;
+    }
+    if (geoError) {
+      setActionMsg({ type: "error", text: "Location access is required for check-in. Please enable location services and refresh." });
+      return;
+    }
+    if (!inRange) {
+      setActionMsg({ type: "error", text: `You must be within ${GEOFENCE_RADIUS_M}m of Taqwa Edu Hub to check in. Current distance: ${geoDistance}m.` });
+      return;
+    }
+    if (!user) {
+      setActionMsg({ type: "error", text: "Authentication error. Please log in again." });
+      return;
+    }
+
     setActionLoading(true);
     setActionMsg(null);
 
-    const { error } = await supabase
-      .from("teacher_attendance")
-      .insert({ teacher_id: user.id, check_in: new Date().toISOString() });
+    try {
+      const { error } = await supabase
+        .from("teacher_attendance")
+        .insert({ teacher_id: user.id, check_in: new Date().toISOString() });
 
-    if (error) {
-      setActionMsg({ type: "error", text: "Check-in failed: " + error.message });
-    } else {
-      setActionMsg({ type: "success", text: "Checked in successfully!" });
-      await fetchAttendance(user.id);
+      if (error) {
+        console.error("Check-in Supabase error:", error);
+        setActionMsg({ type: "error", text: "Check-in failed: " + error.message });
+      } else {
+        setActionMsg({ type: "success", text: "✅ Checked in successfully!" });
+        await fetchAttendance(user.id);
+      }
+    } catch (err) {
+      console.error("Check-in unexpected error:", err);
+      setActionMsg({ type: "error", text: "An unexpected error occurred during check-in. Please try again." });
     }
     setActionLoading(false);
   }
 
   // ─── Check-Out handler ────────────────────────────────────────────────────
   async function handleCheckOut() {
-    if (!inRange || !todayRecord) return;
+    if (geoLoading) {
+      setActionMsg({ type: "error", text: "Still acquiring your location. Please wait..." });
+      return;
+    }
+    if (geoError) {
+      setActionMsg({ type: "error", text: "Location access is required for check-out. Please enable location services and refresh." });
+      return;
+    }
+    if (!inRange) {
+      setActionMsg({ type: "error", text: `You must be within ${GEOFENCE_RADIUS_M}m of Taqwa Edu Hub to check out. Current distance: ${geoDistance}m.` });
+      return;
+    }
+    if (!todayRecord) {
+      setActionMsg({ type: "error", text: "No active check-in found for today. Please check in first." });
+      return;
+    }
+
     setActionLoading(true);
     setActionMsg(null);
 
-    const { error } = await supabase
-      .from("teacher_attendance")
-      .update({ check_out: new Date().toISOString() })
-      .eq("id", todayRecord.id);
+    try {
+      const { error } = await supabase
+        .from("teacher_attendance")
+        .update({ check_out: new Date().toISOString() })
+        .eq("id", todayRecord.id);
 
-    if (error) {
-      setActionMsg({ type: "error", text: "Check-out failed: " + error.message });
-    } else {
-      setActionMsg({ type: "success", text: "Checked out successfully!" });
-      await fetchAttendance(user.id);
+      if (error) {
+        console.error("Check-out Supabase error:", error);
+        setActionMsg({ type: "error", text: "Check-out failed: " + error.message });
+      } else {
+        setActionMsg({ type: "success", text: "✅ Checked out successfully!" });
+        await fetchAttendance(user.id);
+      }
+    } catch (err) {
+      console.error("Check-out unexpected error:", err);
+      setActionMsg({ type: "error", text: "An unexpected error occurred during check-out. Please try again." });
     }
     setActionLoading(false);
   }

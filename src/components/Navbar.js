@@ -104,22 +104,22 @@ export default function Navbar() {
               <div>
                 <p className="text-xs uppercase tracking-widest font-bold text-gray-500 dark:text-gray-400 mb-4">Discover</p>
                 <div className="grid grid-cols-2 gap-4">
-                  <Link href="/leaderboard" onClick={() => setIsDrawerOpen(false)} className="bg-gradient-to-br from-emerald-500 to-teal-600 p-4 rounded-xl text-white shadow-md hover:-translate-y-1 transition-transform cursor-pointer block">
+                  <a href="#" onClick={(e) => { e.preventDefault(); setIsDrawerOpen(false); alert('Feature Coming Soon!'); }} className="bg-gradient-to-br from-emerald-500 to-teal-600 p-4 rounded-xl text-white shadow-md hover:-translate-y-1 transition-transform cursor-pointer block">
                     <i className="fa-solid fa-chart-line text-2xl mb-2 block"></i>
                     <h3 className="font-semibold text-sm">Leaderboard</h3>
-                  </Link>
-                  <Link href="/live-classes" onClick={() => setIsDrawerOpen(false)} className="bg-gradient-to-br from-indigo-500 to-blue-600 p-4 rounded-xl text-white shadow-md hover:-translate-y-1 transition-transform cursor-pointer block">
+                  </a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); setIsDrawerOpen(false); alert('Feature Coming Soon!'); }} className="bg-gradient-to-br from-indigo-500 to-blue-600 p-4 rounded-xl text-white shadow-md hover:-translate-y-1 transition-transform cursor-pointer block">
                     <i className="fa-solid fa-chalkboard-user text-2xl mb-2 block"></i>
                     <h3 className="font-semibold text-sm">Live Classes</h3>
-                  </Link>
-                  <Link href="/mock-tests" onClick={() => setIsDrawerOpen(false)} className="bg-gradient-to-br from-purple-500 to-pink-600 p-4 rounded-xl text-white shadow-md hover:-translate-y-1 transition-transform cursor-pointer block">
+                  </a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); setIsDrawerOpen(false); alert('Feature Coming Soon!'); }} className="bg-gradient-to-br from-purple-500 to-pink-600 p-4 rounded-xl text-white shadow-md hover:-translate-y-1 transition-transform cursor-pointer block">
                     <i className="fa-solid fa-file-contract text-2xl mb-2 block"></i>
                     <h3 className="font-semibold text-sm">Mock Tests</h3>
-                  </Link>
-                  <Link href="/certificates" onClick={() => setIsDrawerOpen(false)} className="bg-gradient-to-br from-rose-500 to-orange-500 p-4 rounded-xl text-white shadow-md hover:-translate-y-1 transition-transform cursor-pointer block">
+                  </a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); setIsDrawerOpen(false); alert('Feature Coming Soon!'); }} className="bg-gradient-to-br from-rose-500 to-orange-500 p-4 rounded-xl text-white shadow-md hover:-translate-y-1 transition-transform cursor-pointer block">
                     <i className="fa-solid fa-medal text-2xl mb-2 block"></i>
                     <h3 className="font-semibold text-sm">Certificates</h3>
-                  </Link>
+                  </a>
                 </div>
               </div>
 
@@ -149,12 +149,12 @@ export default function Navbar() {
                   </div>
                   Profile Settings
                 </Link>
-                <Link href="/support" onClick={() => setIsDrawerOpen(false)} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-700 dark:text-gray-200 font-medium transition-colors w-full text-left">
+                <a href="#" onClick={(e) => { e.preventDefault(); setIsDrawerOpen(false); alert('Feature Coming Soon!'); }} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-700 dark:text-gray-200 font-medium transition-colors w-full text-left">
                   <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 flex items-center justify-center">
                     <i className="fa-solid fa-headset"></i>
                   </div>
                   Help & Support
-                </Link>
+                </a>
                 
                 {/* Dark Mode Toggle inside Drawer */}
                 <button onClick={toggleTheme} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-700 dark:text-gray-200 font-medium transition-colors w-full text-left mt-2">
