@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
@@ -9,11 +9,13 @@ export default function Login() {
   const router = useRouter();
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading]   = useState(false);
   const [success, setSuccess]   = useState(false);
   const [error, setError]       = useState(null);
   const [cooldown, setCooldown] = useState(0);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const submitHistory = useRef([]);
 
   // Human-readable error messages
   function parseError(err) {
@@ -53,39 +55,69 @@ export default function Login() {
     e.preventDefault();
     if (loading || cooldown > 0) return;
 
+    // Rate Limiting: max 3 submits in 60 seconds
+    const now = Date.now();
+    const recentSubmits = submitHistory.current.filter(time => now - time < 60000);
+    if (recentSubmits.length >= 3 && !isForgotPassword) {
+      setError('Too many attempts. Please wait a minute before trying again.');
+      const remainingTime = 60 - Math.floor((now - recentSubmits[0]) / 1000);
+      setCooldown(remainingTime);
+      startCooldownOverride(remainingTime);
+      return;
+    }
+    if (!isForgotPassword) {
+      submitHistory.current = [...recentSubmits, now];
+    }
+
     setLoading(true);
     setError(null);
     setSuccess(false);
 
     try {
+      // Enforce at least 2 seconds delay for generous but secure debouncing
+      const minWait = new Promise(resolve => setTimeout(resolve, 2000));
+
       const supabase = createClient();
+      let actionPromise;
       
       if (isForgotPassword) {
-        // Handle Password Reset
-        const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+        actionPromise = supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/profile`,
         });
-
-        if (resetError) throw resetError;
-        setSuccess(true);
-        startCooldown();
       } else {
-        // Handle Standard Login
-        const { error: loginError } = await supabase.auth.signInWithPassword({
+        actionPromise = supabase.auth.signInWithPassword({
           email,
           password
         });
+      }
 
-        if (loginError) throw loginError;
-        
-        router.push('/dashboard');
+      // Wait for both supabase action AND the 2 second minimum
+      const [actionResult] = await Promise.all([actionPromise, minWait]);
+      const { error: actionError } = actionResult;
+
+      if (actionError) throw actionError;
+      
+      if (isForgotPassword) {
+        setSuccess(true);
+        startCooldown();
+      } else {
         router.refresh();
+        router.push('/dashboard');
       }
     } catch (err) {
       setError(parseError(err));
     } finally {
       setLoading(false);
     }
+  };
+
+  const startCooldownOverride = (secs) => {
+    setCooldown(secs);
+    const timer = setInterval(() => {
+      secs -= 1;
+      setCooldown(secs);
+      if (secs <= 0) clearInterval(timer);
+    }, 1000);
   };
 
   return (
@@ -166,19 +198,27 @@ export default function Login() {
                   <label htmlFor="password" className="block text-sm font-bold text-gray-700 mb-2">
                     Password
                   </label>
-                  <div className="mt-1">
+                  <div className="mt-1 relative">
                     <input
                       id="password"
                       name="password"
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       autoComplete="current-password"
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="appearance-none block w-full px-4 py-3.5 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm font-medium text-gray-900 transition-all bg-gray-50/50 hover:bg-white"
+                      className="appearance-none block w-full px-4 py-3.5 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm font-medium text-gray-900 transition-all bg-gray-50/50 hover:bg-white pr-12"
                       placeholder="••••••••"
                       disabled={loading}
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600 transition-colors"
+                      tabIndex="-1"
+                    >
+                      <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'} text-lg`}></i>
+                    </button>
                   </div>
                 </div>
               )}
