@@ -15,6 +15,7 @@ export default function Profile() {
   // Form states
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -46,12 +47,25 @@ export default function Profile() {
 
     try {
       // Basic validation for password change
-      if (newPassword || confirmPassword) {
+      if (newPassword || confirmPassword || oldPassword) {
+        if (!oldPassword) {
+          throw new Error("Please enter your current password to set a new one.");
+        }
         if (newPassword !== confirmPassword) {
           throw new Error("New passwords do not match.");
         }
         if (newPassword.length < 6) {
           throw new Error("Password must be at least 6 characters.");
+        }
+        
+        // Verify current password first
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: user.email,
+          password: oldPassword,
+        });
+
+        if (signInError) {
+          throw new Error("Incorrect current password.");
         }
       }
 
@@ -71,6 +85,7 @@ export default function Profile() {
       if (updateError) throw updateError;
 
       setMessage({ type: "success", text: "Profile updated successfully!" });
+      setOldPassword("");
       setNewPassword("");
       setConfirmPassword("");
 
@@ -165,6 +180,16 @@ export default function Profile() {
               <p className="text-sm text-gray-500 mb-6">Leave blank if you do not wish to change your password.</p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-semibold text-dark mb-2">Current Password</label>
+                  <input 
+                    type="password" 
+                    value={oldPassword}
+                    onChange={(e) => setOldPassword(e.target.value)}
+                    placeholder="Enter current password"
+                    className="w-full px-4 py-3 bg-light rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary/50 outline-none transition-all shadow-inner text-dark font-medium"
+                  />
+                </div>
                 <div>
                   <label className="block text-sm font-semibold text-dark mb-2">New Password</label>
                   <input 

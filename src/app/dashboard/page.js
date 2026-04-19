@@ -11,8 +11,17 @@ export default async function Dashboard() {
   let presentCount = 0;
   let totalDays = 0;
   let percentage = 0;
+  let userBatch = null;
+  let userCourses = [];
 
   if (user) {
+    const { data: profile } = await supabase.from('profiles').select('batch').eq('id', user.id).single();
+    if (profile?.batch) {
+      userBatch = profile.batch;
+      const { data: courses } = await supabase.from('courses').select('*').eq('batch', userBatch);
+      if (courses) userCourses = courses;
+    }
+
     const { data: records, error } = await supabase
       .from('attendance')
       .select('date, status')
@@ -29,11 +38,7 @@ export default async function Dashboard() {
 
   const recentHistory = attendanceRecords.slice(0, 5);
 
-  const dummySubjects = [
-    { title: "English Literature", duration: "45 Mins / session", schedule: "Tue, Thu (10:00 AM)", teacherName: "Sarah Johnson", isVerified: true },
-    { title: "Chemistry Advanced", duration: "60 Mins / session", schedule: "Mon, Wed (01:00 PM)", teacherName: "Ahsan Sammar", isVerified: true },
-    { title: "Calculus & Algebra", duration: "90 Mins / session", schedule: "Fri, Sat (09:00 AM)", teacherName: "Michael Chang", isVerified: false },
-  ];
+
 
   const circumference = 2 * Math.PI * 56;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
@@ -105,18 +110,25 @@ export default async function Dashboard() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
           <h2 className="text-xl font-bold text-gray-900 mb-6 tracking-tight">Your Courses</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {dummySubjects.map((sub, i) => (
-              <SubjectCard 
-                key={i}
-                title={sub.title}
-                duration={sub.duration}
-                schedule={sub.schedule}
-                teacherName={sub.teacherName}
-                isVerified={sub.isVerified}
-              />
-            ))}
-          </div>
+          {!userBatch || userCourses.length === 0 ? (
+            <div className="bg-white/50 border border-gray-100 rounded-3xl p-10 text-center shadow-sm">
+              <i className="fa-solid fa-folder-open text-4xl text-gray-300 mb-4 block"></i>
+              <p className="text-gray-500 font-medium">You are not enrolled in any classes yet. Please contact the administrator.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              {userCourses.map((sub, i) => (
+                <SubjectCard 
+                  key={sub.id || i}
+                  title={sub.name || sub.title || "Course"}
+                  duration={sub.duration || "N/A"}
+                  schedule={sub.schedule || "TBA"}
+                  teacherName={sub.teacherName || sub.instructor || "Faculty"}
+                  isVerified={sub.isVerified ?? true}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </main>
 

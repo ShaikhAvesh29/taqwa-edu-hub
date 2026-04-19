@@ -296,7 +296,7 @@ export default function FacultyPage() {
   }
 
   // ─── 403 — wrong role ─────────────────────────────────────────────────────
-  if (role !== "teacher" && role !== "admin") {
+  if (role !== "teacher" && role !== "faculty" && role !== "admin") {
     return (
       <div className="min-h-screen flex flex-col bg-[#F9FAFB] dark:bg-gray-950">
         <Navbar />

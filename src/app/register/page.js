@@ -7,6 +7,9 @@ import { createClient } from '@/utils/supabase/client';
 
 export default function Register() {
   const router = useRouter();
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone]       = useState('');
+  const [batch, setBatch]       = useState('');
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -38,6 +41,11 @@ export default function Register() {
     e.preventDefault();
     if (loading || cooldown > 0) return;
 
+    if (!fullName.trim() || !phone.trim() || !batch.trim() || !email.trim() || !password.trim()) {
+      setError("Please fill in all mandatory fields.");
+      return;
+    }
+
     // Rate Limiting: max 3 submits in 60 seconds
     const now = Date.now();
     const recentSubmits = submitHistory.current.filter(time => now - time < 60000);
@@ -64,6 +72,11 @@ export default function Register() {
         email,
         password,
         options: {
+          data: {
+            full_name: fullName,
+            phone: phone,
+            batch: batch
+          },
           emailRedirectTo: `${window.location.origin}/dashboard`,
         }
       });
@@ -136,6 +149,63 @@ export default function Register() {
             </div>
           ) : (
             <form className="space-y-6" onSubmit={handleRegister}>
+              <div>
+                <label htmlFor="fullName" className="block text-sm font-bold text-gray-700 mb-2">
+                  Full Name
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="fullName"
+                    name="fullName"
+                    type="text"
+                    required
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="appearance-none block w-full px-4 py-3.5 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm font-medium text-gray-900 transition-all bg-gray-50/50 hover:bg-white"
+                    placeholder="John Doe"
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="phone" className="block text-sm font-bold text-gray-700 mb-2">
+                  Phone Number
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="appearance-none block w-full px-4 py-3.5 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm font-medium text-gray-900 transition-all bg-gray-50/50 hover:bg-white"
+                    placeholder="+1234567890"
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="batch" className="block text-sm font-bold text-gray-700 mb-2">
+                  Standard/Class
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="batch"
+                    name="batch"
+                    type="text"
+                    required
+                    value={batch}
+                    onChange={(e) => setBatch(e.target.value)}
+                    className="appearance-none block w-full px-4 py-3.5 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm font-medium text-gray-900 transition-all bg-gray-50/50 hover:bg-white"
+                    placeholder="e.g. 10th Grade"
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+
               <div>
                 <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-2">
                   Email address

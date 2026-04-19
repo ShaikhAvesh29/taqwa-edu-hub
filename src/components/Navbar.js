@@ -159,17 +159,23 @@ export default function Navbar() {
               <div className="flex flex-col gap-2">
                 <p className="text-xs uppercase tracking-widest font-bold text-gray-500 dark:text-gray-400 mb-2">Platform</p>
                 
-                <Link href="/faculty" onClick={() => setIsDrawerOpen(false)} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-700 dark:text-gray-200 font-medium transition-colors">
-                  <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                    <i className="fa-solid fa-chalkboard-teacher"></i>
+                <Link href="/dashboard" onClick={() => setIsDrawerOpen(false)} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-700 dark:text-gray-200 font-medium transition-colors">
+                  <div className="w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-900/50 text-teal-600 dark:text-teal-400 flex items-center justify-center">
+                    <i className="fa-solid fa-house"></i>
                   </div>
-                  Attendance Portal
+                  Dashboard
                 </Link>
                 <Link href="/my-batches" onClick={() => setIsDrawerOpen(false)} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-700 dark:text-gray-200 font-medium transition-colors">
                   <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                     <i className="fa-solid fa-graduation-cap"></i>
                   </div>
                   Enrolled Courses
+                </Link>
+                <Link href="/faculty" onClick={() => setIsDrawerOpen(false)} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-700 dark:text-gray-200 font-medium transition-colors">
+                  <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                    <i className="fa-solid fa-chalkboard-teacher"></i>
+                  </div>
+                  Attendance Portal
                 </Link>
 
                 <div className="my-2 border-t border-gray-100 dark:border-gray-800"></div>
