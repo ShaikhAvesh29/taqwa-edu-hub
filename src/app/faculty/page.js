@@ -65,13 +65,17 @@ export default function FacultyPage() {
       setUser(u);
 
       // Look up role from profiles table
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from("profiles")
         .select("role")
         .eq("id", u.id)
         .single();
 
-      setRole(profile?.role ?? null);
+      if (error) {
+        console.error("Profile fetch error:", error);
+      }
+
+      setRole(profile?.role ? String(profile.role).toLowerCase().trim() : null);
       setAuthLoading(false);
     }
     resolveAuth();

@@ -37,13 +37,17 @@ export default function FacultyAttendanceDashboard() {
       }
       setUser(u);
 
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from("profiles")
         .select("role")
         .eq("id", u.id)
         .single();
 
-      setRole(profile?.role ?? null);
+      if (error) {
+        console.error("Profile fetch error:", error);
+      }
+
+      setRole(profile?.role ? String(profile.role).toLowerCase().trim() : null);
       setAuthLoading(false);
     }
     resolveAuth();

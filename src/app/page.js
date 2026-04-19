@@ -53,9 +53,15 @@ export default function Home() {
 
     async function fetchCourses() {
       const { data, error } = await supabase.from('courses').select('*');
+      if (error) {
+        console.warn("Courses fetching error:", error);
+      }
+      
       if (!error && data && data.length > 0) {
+        console.log("Successfully fetched DB courses:", data);
         setCourses(data);
       } else {
+        console.log("DB returned empty or error, using dummy courses.");
         // Fallback to hardcoded courses when DB is empty or unreachable
         setCourses(dummyCourses);
       }
