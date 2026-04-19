@@ -17,21 +17,23 @@ export default function AdminDashboard() {
   }, []);
 
   async function fetchData() {
-    setLoading(true);
-    // Fetch teachers
-    const { data: tData } = await supabase.from('teachers').select('*');
-    if (tData) setTeachers(tData);
+    // Fetch teachers from profiles
+    const { data: tData } = await supabase.from('profiles').select('*').in('role', ['teacher', 'faculty']);
+    if (tData) {
+      setTeachers(tData.map(t => ({...t, name: t.full_name || t.name})));
+    }
 
-    // Fetch courses with joined teacher data
+    // Fetch courses
     const { data: cData, error } = await supabase
       .from('courses')
-      .select(`
-        *,
-        teachers ( name )
-      `);
+      .select('*');
       
     if (cData) {
-      setCourses(cData);
+      const coursesWithTeachers = cData.map(c => ({
+        ...c,
+        teachers: { name: tData?.find(t => t.id === c.teacher_id)?.full_name || tData?.find(t => t.id === c.teacher_id)?.name }
+      }));
+      setCourses(coursesWithTeachers);
     } else {
       // Fallback dummy data if no DB connected
       console.warn("Using fallback admin data", error);

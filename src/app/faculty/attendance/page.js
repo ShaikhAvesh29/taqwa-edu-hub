@@ -97,7 +97,7 @@ export default function FacultyAttendanceDashboard() {
   }, [batch, date, supabase]);
 
   useEffect(() => {
-    if (user && (role === "teacher" || role === "admin")) {
+    if (user && (role === "teacher" || role === "faculty" || role === "admin")) {
       fetchStudents();
     }
   }, [fetchStudents, user, role]);
@@ -144,7 +144,7 @@ export default function FacultyAttendanceDashboard() {
     );
   }
 
-  if (!user || (role !== "teacher" && role !== "admin")) {
+  if (!user || (role !== "teacher" && role !== "faculty" && role !== "admin")) {
     return (
       <div className="min-h-screen flex flex-col bg-[#F9FAFB]">
         <Navbar />

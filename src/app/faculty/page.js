@@ -64,7 +64,7 @@ export default function FacultyPage() {
       if (!u) { setAuthLoading(false); return; }
       setUser(u);
 
-      // Look up role from profiles or teachers table
+      // Look up role from profiles table
       const { data: profile } = await supabase
         .from("profiles")
         .select("role")
