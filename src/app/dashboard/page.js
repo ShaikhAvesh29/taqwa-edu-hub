@@ -15,11 +15,36 @@ export default async function Dashboard() {
   let userCourses = [];
 
   if (user) {
-    const { data: profile } = await supabase.from('profiles').select('batch').eq('id', user.id).single();
+    const { data: profile } = await supabase.from('profiles').select('batch, full_name, name').eq('id', user.id).single();
     if (profile?.batch) {
       userBatch = profile.batch;
       const { data: courses } = await supabase.from('courses').select('*').eq('batch', userBatch);
       if (courses) userCourses = courses;
+    }
+
+    // Lazy sync mechanism: if user was created without the trigger properly mapping metadata
+    if (user.user_metadata) {
+       let needsSync = false;
+       let updates = {};
+       if (!profile?.full_name && user.user_metadata.full_name) {
+          updates.full_name = user.user_metadata.full_name;
+          needsSync = true;
+       }
+       if (!profile?.name && user.user_metadata.full_name) {
+          updates.name = user.user_metadata.full_name;
+          needsSync = true;
+       }
+       if (!profile?.batch && user.user_metadata.batch) {
+          updates.batch = user.user_metadata.batch;
+          needsSync = true;
+       }
+       
+       if (needsSync && Object.keys(updates).length > 0) {
+          await supabase.from('profiles').update(updates).eq('id', user.id);
+          if (updates.batch && !userBatch) {
+             userBatch = updates.batch;
+          }
+       }
     }
 
     const { data: records, error } = await supabase

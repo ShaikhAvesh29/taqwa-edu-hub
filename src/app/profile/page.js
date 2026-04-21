@@ -83,6 +83,21 @@ export default function Profile() {
       const { error: updateError } = await supabase.auth.updateUser(updateData);
 
       if (updateError) throw updateError;
+      
+      // Also update the 'profiles' table to ensure data is synced with database
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          full_name: fullName,
+          name: fullName
+        })
+        .eq('id', user.id);
+        
+      if (profileError) {
+         console.warn("Failed to update public profile:", profileError);
+      }
+
+      if (updateError) throw updateError;
 
       setMessage({ type: "success", text: "Profile updated successfully!" });
       setOldPassword("");

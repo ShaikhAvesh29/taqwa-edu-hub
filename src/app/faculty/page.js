@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -327,13 +328,20 @@ export default function FacultyPage() {
 
       <main className="flex-grow max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
         {/* Page header */}
-        <div className="mb-10">
-          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100">
-            Faculty Time-Clock
-          </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm font-medium">
-            Welcome back, {user.email}
-          </p>
+        <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100">
+              Faculty Time-Clock
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm font-medium">
+              Welcome back, {user.email}
+            </p>
+          </div>
+          <div>
+            <Link href="/faculty/attendance" className="inline-flex items-center justify-center px-6 py-3 font-bold text-white bg-primary hover:bg-emerald-600 rounded-xl shadow-md hover:shadow-lg transition-all rounded-[1rem]">
+              <i className="fa-solid fa-clipboard-user mr-2 text-lg"></i> Mark Student Attendance
+            </Link>
+          </div>
         </div>
 
         {/* Live clock card */}

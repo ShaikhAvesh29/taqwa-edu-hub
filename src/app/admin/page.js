@@ -50,29 +50,54 @@ export default function AdminDashboard() {
     setIsModalOpen(true);
   };
 
+  const handleNewClick = () => {
+    setEditingCourse({ isNew: true, title: '', teacher_id: '', total_lectures: 0, class_duration: '' });
+    setIsModalOpen(true);
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
     
-    // Live update to DB
-    const { error } = await supabase
-      .from('courses')
-      .update({
-        title: editingCourse.title,
-        teacher_id: editingCourse.teacher_id,
-        total_lectures: editingCourse.total_lectures,
-        class_duration: editingCourse.class_duration
-      })
-      .eq('id', editingCourse.id);
-      
-    if (!error) {
-       // Refresh local dataset
-       await fetchData();
+    if (editingCourse.isNew) {
+      // Live insert to DB for new course
+      const { error } = await supabase
+        .from('courses')
+        .insert([{
+          title: editingCourse.title,
+          teacher_id: editingCourse.teacher_id || null, // Allow unassigned
+          total_lectures: parseInt(editingCourse.total_lectures, 10) || 0,
+          class_duration: editingCourse.class_duration
+        }]);
+        
+      if (!error) {
+         await fetchData();
+      } else {
+         console.error("Error creating course:", error);
+         alert("Failed to create course. Please try again.");
+      }
     } else {
-       // local mock commit if DB fails (for purely visual fallback)
-       setCourses(prev => prev.map(c => c.id === editingCourse.id ? { 
-           ...editingCourse, 
-           teachers: { name: teachers.find(t => t.id === editingCourse.teacher_id)?.name } 
-       } : c));
+      // Live update to DB for existing course
+      const { error } = await supabase
+        .from('courses')
+        .update({
+          title: editingCourse.title,
+          teacher_id: editingCourse.teacher_id || null,
+          total_lectures: parseInt(editingCourse.total_lectures, 10) || 0,
+          class_duration: editingCourse.class_duration
+        })
+        .eq('id', editingCourse.id);
+        
+      if (!error) {
+         // Refresh local dataset
+         await fetchData();
+      } else {
+         console.error("Error updating course:", error);
+         // Local fallback if saving to DB fails
+         setCourses(prev => prev.map(c => c.id === editingCourse.id ? { 
+             ...editingCourse, 
+             teachers: { name: teachers.find(t => t.id === editingCourse.teacher_id)?.name } 
+         } : c));
+      }
     }
     setIsModalOpen(false);
   };
@@ -85,7 +110,10 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 md:mb-8">
             <h1 className="text-2xl md:text-3xl font-bold text-dark tracking-tight">Admin Control Center</h1>
-            <button className="min-h-[48px] min-w-[48px] bg-primary hover:bg-emerald-600 text-white px-5 py-2.5 rounded-lg shadow-sm font-medium transition-colors text-base self-start md:self-auto">
+            <button 
+              onClick={handleNewClick}
+              className="min-h-[48px] min-w-[48px] bg-primary hover:bg-emerald-600 text-white px-5 py-2.5 rounded-lg shadow-sm font-medium transition-colors text-base self-start md:self-auto"
+            >
               + New Course
             </button>
           </div>
@@ -133,7 +161,9 @@ export default function AdminDashboard() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark/60 backdrop-blur-sm">
           <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="flex justify-between items-center p-4 md:p-6 border-b border-gray-100">
-              <h2 className="text-lg md:text-xl font-bold text-dark truncate pr-4">Update Course Details</h2>
+              <h2 className="text-lg md:text-xl font-bold text-dark truncate pr-4">
+                {editingCourse.isNew ? "Create New Course" : "Update Course Details"}
+              </h2>
               <button onClick={() => setIsModalOpen(false)} className="min-h-[48px] min-w-[48px] text-gray-400 hover:text-dark transition-colors flex items-center justify-center">
                 <i className="fa-solid fa-xmark text-xl md:text-2xl"></i>
               </button>
