@@ -85,6 +85,9 @@ export default function Login() {
           redirectTo: `${window.location.origin}/profile`,
         });
       } else {
+        // Aggressively clear stale sessions before signing in
+        await supabase.auth.signOut();
+        
         actionPromise = supabase.auth.signInWithPassword({
           email,
           password
@@ -93,7 +96,7 @@ export default function Login() {
 
       // Wait for both supabase action AND the 2 second minimum
       const [actionResult] = await Promise.all([actionPromise, minWait]);
-      const { error: actionError } = actionResult;
+      const { data: authData, error: actionError } = actionResult;
 
       if (actionError) throw actionError;
       
@@ -101,8 +104,24 @@ export default function Login() {
         setSuccess(true);
         startCooldown();
       } else {
+        // Fetch role directly from the profiles table as the single source of truth
+        let role = 'student';
+        if (authData?.user) {
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', authData.user.id)
+            .single();
+            
+          role = profileData?.role?.toLowerCase()?.trim() || 'student';
+        }
+
         router.refresh();
-        router.push('/dashboard');
+        if (['faculty', 'teacher', 'admin'].includes(role)) {
+          router.push('/faculty');
+        } else {
+          router.push('/dashboard');
+        }
       }
     } catch (err) {
       setError(parseError(err));

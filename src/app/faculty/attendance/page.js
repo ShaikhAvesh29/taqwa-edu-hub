@@ -120,9 +120,8 @@ export default function FacultyAttendanceDashboard() {
         student_id: s.id,
         date: date,
         status: attendanceState[s.id],
-        batch: batch,
-        // Since we are upserting, we need to make sure we don't duplicate. 
-        // We assume attendance table has a unique exact constraint on (student_id, date)
+        batch_name: batch,
+        marked_by: user.id
       }));
 
       const { error } = await supabase

@@ -37,8 +37,22 @@ export async function middleware(request) {
     const { data: { user } } = await supabase.auth.getUser()
 
     const isAuthRoute = request.nextUrl.pathname.startsWith('/login')
+    const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard') || 
+                             request.nextUrl.pathname.startsWith('/admin') ||
+                             request.nextUrl.pathname.startsWith('/faculty');
 
-    if (!user && (request.nextUrl.pathname.startsWith('/dashboard') || request.nextUrl.pathname.startsWith('/admin'))) {
+    let userRole = 'student'; // Default role
+    if (user) {
+      // Check the unique source of truth
+      const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+      if (profile?.role) {
+        userRole = profile.role.toLowerCase().trim();
+      }
+    }
+
+    const isFacultyRole = ['teacher', 'faculty', 'admin'].includes(userRole);
+
+    if (!user && isProtectedRoute) {
       const url = request.nextUrl.clone()
       url.pathname = '/login'
       return NextResponse.redirect(url)
@@ -46,8 +60,17 @@ export async function middleware(request) {
 
     if (user && isAuthRoute) {
       const url = request.nextUrl.clone()
-      url.pathname = '/dashboard'
+      url.pathname = isFacultyRole ? '/faculty' : '/dashboard';
       return NextResponse.redirect(url)
+    }
+
+    // Faculty Dashboard Protection
+    if (user && request.nextUrl.pathname.startsWith('/faculty')) {
+      if (!isFacultyRole) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/dashboard'
+        return NextResponse.redirect(url)
+      }
     }
   } catch (e) {
      console.warn("Middleware Database warning: ", e)
